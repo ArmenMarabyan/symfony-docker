@@ -40,4 +40,24 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN curl -sS https://get.symfony.com/cli/installer | bash
 RUN mv /root/.symfony5/bin/symfony /usr/local/bin/symfony
 
+RUN apt-get install -y nodejs npm
+RUN npm cache clean -f
+RUN npm install -g n
+RUN n stable
+
+RUN groupadd -g 1000 www
+RUN useradd -u 1000 -ms /bin/bash -g www www
+
+# Copy existing application directory contents
+COPY . /var/www
+
+# Copy existing application directory permissions
+COPY --chown=www:www . /var/www
+
+RUN whoami
+
+# Change current user to www
+USER www
+RUN whoami
+
 WORKDIR /var/www/symfony
